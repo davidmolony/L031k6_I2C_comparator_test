@@ -151,48 +151,8 @@ int main(void)
 	  	  sprintf(lol, "Temp is: %f \r", ftemp);
 	  	  HAL_UART_Transmit(&huart2, (uint8_t*)lol, strlen(lol),5);
 	  	   	   	  //////////////////Read the MCP3424 voltage
+MCP3424();
 
-	  	  //HAL_I2C_IsDeviceReady(&hi2c1,(MCP3424add<<1),1,10);
-
-	  	  if(HAL_I2C_IsDeviceReady(&hi2c1,(MCP3424add<<1),1,10)==HAL_OK){
-	  	                  HAL_UART_Transmit(&huart2,"MCP3424 Ready\r",14, 10);
-	  	  }
-	  	  /////Write the config register to set the resolution
-	  	  HAL_I2C_Mem_Read(&hi2c1,(MCP3424add<<1),configSet,1,ADCdatarec,5,10);
-
-	  	  //HAL_I2C_Master_Transmit(&hi2c1,(MCP3424add<<1),configSet,1,10);
-	  	  /////Read the data back
-	  	  HAL_I2C_Master_Receive(&hi2c1,(MCP3424add<<1),ADCdatarec,5,10);
-
-	  	  switch(Resolution){
-	  	  case 12:
-	  		ADCval=0;
-	  			  			ADCval=(ADCdatarec[1]<<0)|(ADCdatarec[0]<<8);
-	  			  			ADCval = (0x0800&ADCval ? (int)(0x07FF&ADCval)-0x0800 : ADCval);
-	  		 HAL_UART_Transmit(&huart2, "Resolution 12 \r", strlen("Resolution 12 \r"),5);
-	  			  			break;
-	  	  case 14:
-	  		  	  	  	  	ADCval=(ADCdatarec[1]<<0)|(ADCdatarec[0]<<8);
-	  			  			ADCval = (0x2000&ADCval ? (int)(0x1FFF&ADCval)-0x2000 : ADCval);
-	  		 HAL_UART_Transmit(&huart2, "Resolution 14", strlen("Resolution 14"),5);
-	  		 	 	 	 	 break;
-
-
-	  	  case 16:
-	  		  	  	  	  	ADCval=(ADCdatarec[1]<<0)|(ADCdatarec[0]<<8);
-	  			  			ADCval = (0x8000&ADCval ? (int)(0x7FFF&ADCval)-0x8000 : ADCval);
-	  		 HAL_UART_Transmit(&huart2, "Resolution 16", strlen("Resolution 16"),5);
-	  		 	 	 	 	 break;
-	  	  case 18:
-	  		  	  	  	  	ADCval=(ADCdatarec[2]<<0)|(ADCdatarec[1]<<8)|(ADCdatarec[0]<<16);
-	  			  			ADCval = (0x20000&ADCval ? (int)(0x1FFFF&ADCval)-0x20000 : ADCval);
-	  		 HAL_UART_Transmit(&huart2, "Resolution 16", strlen("Resolution 16"),5);
-	  		 	 	 	 	 break;
-
-	  	  }
-
-	  	  sprintf(lol, "ADCval: %d \r", ADCval);
-	  	  HAL_UART_Transmit(&huart2, (uint8_t*)lol, strlen(lol),5);
 
 	  	  HAL_Delay(500);
     /* USER CODE END WHILE */
@@ -565,7 +525,50 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void MCP3424(){
+	  //HAL_I2C_IsDeviceReady(&hi2c1,(MCP3424add<<1),1,10);
 
+	  if(HAL_I2C_IsDeviceReady(&hi2c1,(MCP3424add<<1),1,10)==HAL_OK){
+	                  HAL_UART_Transmit(&huart2,"MCP3424 Ready\r",14, 10);
+	  }
+	  /////Write the config register to set the resolution
+	  HAL_I2C_Mem_Read(&hi2c1,(MCP3424add<<1),configSet,1,ADCdatarec,5,10);
+
+	  //HAL_I2C_Master_Transmit(&hi2c1,(MCP3424add<<1),configSet,1,10);
+	  /////Read the data back
+	  HAL_I2C_Master_Receive(&hi2c1,(MCP3424add<<1),ADCdatarec,5,10);
+
+	  switch(Resolution){
+	  case 12:
+		ADCval=0;
+			  			ADCval=(ADCdatarec[1]<<0)|(ADCdatarec[0]<<8);
+			  			ADCval = (0x0800&ADCval ? (int)(0x07FF&ADCval)-0x0800 : ADCval);
+		 HAL_UART_Transmit(&huart2, "Resolution 12 \r", strlen("Resolution 12 \r"),5);
+			  			break;
+	  case 14:
+		  	  	  	  	ADCval=(ADCdatarec[1]<<0)|(ADCdatarec[0]<<8);
+			  			ADCval = (0x2000&ADCval ? (int)(0x1FFF&ADCval)-0x2000 : ADCval);
+		 HAL_UART_Transmit(&huart2, "Resolution 14", strlen("Resolution 14"),5);
+		 	 	 	 	 break;
+
+
+	  case 16:
+		  	  	  	  	ADCval=(ADCdatarec[1]<<0)|(ADCdatarec[0]<<8);
+			  			ADCval = (0x8000&ADCval ? (int)(0x7FFF&ADCval)-0x8000 : ADCval);
+		 HAL_UART_Transmit(&huart2, "Resolution 16", strlen("Resolution 16"),5);
+		 	 	 	 	 break;
+	  case 18:
+		  	  	  	  	ADCval=(ADCdatarec[2]<<0)|(ADCdatarec[1]<<8)|(ADCdatarec[0]<<16);
+			  			ADCval = (0x20000&ADCval ? (int)(0x1FFFF&ADCval)-0x20000 : ADCval);
+		 HAL_UART_Transmit(&huart2, "Resolution 16", strlen("Resolution 16"),5);
+		 	 	 	 	 break;
+
+	  }
+char msgOut[32];
+	  sprintf(msgOut, "ADCval: %d \r", ADCval);
+	  HAL_UART_Transmit(&huart2, (uint8_t*)msgOut, strlen(msgOut),5);
+
+}
 /* USER CODE END 4 */
 
 /**
