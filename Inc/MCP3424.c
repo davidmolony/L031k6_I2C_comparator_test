@@ -4,21 +4,17 @@
  *  Created on: 11 May 2019
  *      Author: Lenovo
  */
-//#include "MCP3424.h"
-#include "stdint.h"
+#include "MCP3424.h"
+#include <stdint.h>	//srm: this is a standard library that comes with compiler. use <>
 
 
-
-uint8_t ADCdatarec[5] = {0};
-uint16_t MCP3424add = 0b0000000001101000;
-uint32_t ADCval=0;
-int Resolution =18;
-uint8_t configSet = 0b10011100;
-
-void MCP3424(){
+void MCP3424(I2C_HandleTypeDef* pI2C, ){
+	if(pI2C != NULL){
+		pI2CHandle = pI2C;
+	}
 	  //HAL_I2C_IsDeviceReady(&hi2c1,(MCP3424add<<1),1,10);
 
-	  if(HAL_I2C_IsDeviceReady(&hi2c1,(MCP3424add<<1),1,10)==HAL_OK){
+	  if(HAL_I2C_IsDeviceReady(pI2CHandle,(MCP3424add<<1),1,10)==HAL_OK){
 	                  HAL_UART_Transmit(&huart2,"MCP3424 Ready\r",14, 10);
 	  }
 	  /////Write the config register to set the resolution
@@ -54,8 +50,7 @@ void MCP3424(){
 		 	 	 	 	 break;
 
 	  }
-char msgOut[32];
+	  char msgOut[32];
 	  sprintf(msgOut, "ADCval: %d \r", ADCval);
 	  HAL_UART_Transmit(&huart2, (uint8_t*)msgOut, strlen(msgOut),5);
-
 }
