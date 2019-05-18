@@ -147,7 +147,7 @@ int main(void)
 	  	  sprintf(lol, "Temp is: %f \r", ftemp);
 	  	  HAL_UART_Transmit(&huart2, (uint8_t*)lol, strlen(lol),5);
 	  	   	   	  //////////////////Read the MCP3424 voltage
-MCP3424();
+MCP3424(&hi2c1,&huart2);
 
 
 	  	  HAL_Delay(500);
